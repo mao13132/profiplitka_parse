@@ -12,38 +12,16 @@ class SaveResult:
 
         self.colums_checker = {}
 
-        self.good_dict = good_dict['result']
+        self.good_dict = good_dict
 
-        self.colums_harakt = ['Страна Бренда', 'Производитель', 'Серия', 'Страна производства внутреннего блока',
-                              'Страна производства наружного блока', 'Завод изготовитель', 'Категории товара',
-                              'На площадь (м2)', 'Охлаждение (кВт)', 'Обогрев (кВт)', 'Уровень шума (дБ)', 'Инвертор',
-                              'Цвет внутреннего блока', 'Рабочий диапазон температур (охлаждение)',
-                              'Рабочий диапазон температур (обогрев)', 'Хладагент', 'Класс энергоэффективности',
-                              'Расход воздуха (м3/час)', 'С функциями', 'С фильтрами', 'Режим работы',
-                              'Электропитание (В)', 'Потребляемая мощность (кВт)', 'Диаметр трубопроводов',
-                              'Длина трассы (м)', 'Максимальный перепад высот (м)',
-                              'Габариты внутреннего блока ШхВхГ (мм)', 'Габариты внешнего блока ШхВхГ (мм)',
-                              'Вес внутреннего блока', 'Вес внешнего блока', 'Вес общий (кг.)', 'Wi-Fi',
-                              'Подключение электропитания', 'Марка компрессора', 'Ионизатор воздуха',
-                              'Увлажнение воздуха', 'Режим приточной вентиляции', 'Напор воздуха',
-                              'Внешнее статическое давление (Па)', '', 'Дренажный насос', 'Зимний комплект',
-                              'Размеры декоративной панели (мм)', 'Вес декоративной панели',
-                              'Пульт дистанционного управления', 'Мобильный', 'Управление', 'Габариты, мм',
-                              'УФ-лампа для обеззараживания', 'Виды блоков', 'Управление вертикальными жалюзи',
-                              'По типу', 'MPN', 'Сенсор движения', 'Тип прецизионного кондиционера',
-                              'Охлаждение конденсатора', 'Расход воды, м3/час', 'Компрессор', 'Количество компрессоров',
-                              'Серия Belluna', 'Температурный режим', 'Объем камеры (м3)', 'Диапазон температур (°C)',
-                              'Рабочее давление при +0 гр. в камере (бар)',
-                              'Рабочее давление при +5 гр. в камере (бар)', 'Тип оттайки', 'Ток (А)', 'Тип установки',
-                              'Функция естественного охаждения', 'Система Econavi', 'Размеры декоративной панели',
-                              'Встроенный Bluetooth динамик']
-        # self.colums_harakt = good_dict['name_colums']
+
+        self.colums_harakt = []
 
         self.colums = ['ID продукта', 'Код', 'Имя продукта', 'Цена', 'Старая цена', 'Комплект главные',
                        'Комплект дополнительные', 'Фото', 'Категория', 'Производитель', 'Тип товара',
                        'Ссылка на сторонний сайт', 'Алгоритм', 'Ед.Измерения', 'ID', 'PARENT_ID', 'Видимость',
-                       'Видимость варианта', 'Статус товара', 'Количество', 'Гарантия', 'Документы', 'Видео',
-                       'Артикул', 'Описание']
+                       'Видимость варианта', 'Статус товара', 'Количество', 'Описание', 'Видео', 'Документы',
+                       'Гарантия', 'Артикул', 'Страна Бренда', 'Производитель', 'Коллекция', 'Цвет', 'Размер', 'Тип']
 
     @staticmethod
     def save_to_json(filename, good_data):
@@ -86,7 +64,11 @@ class SaveResult:
 
         ws.cell(row=count_def, column=1).value = ''
         ws.cell(row=count_def, column=2).value = ''
-        ws.cell(row=count_def, column=3).value = post['name']
+        try:
+            name = post['name']
+        except:
+            name = ''
+        ws.cell(row=count_def, column=3).value = name
 
         try:
             price = int(post['price'])
@@ -102,47 +84,78 @@ class SaveResult:
         ws.cell(row=count_def, column=7).value = ''
 
         try:
-            image = post['image']
+            image = ' '.join(x for x in post['image'])
         except:
             image = ''
 
         ws.cell(row=count_def, column=8).value = image
 
         try:
-            category = post['xarakt']['Категории товара']
+            category = 'Плитка, керамогранит, мозаика'
         except:
             category = ''
 
+
         ws.cell(row=count_def, column=9).value = category
-        ws.cell(row=count_def, column=10).value = post['xarakt']['Производитель']
-        ws.cell(row=count_def, column=11).value = category
-        ws.cell(row=count_def, column=12).value = post['link']
+        try:
+            proiz = post['proizvoditel']
+        except:
+            proiz = ''
+        ws.cell(row=count_def, column=10).value = proiz
+        ws.cell(row=count_def, column=11).value = ''
+        try:
+            link = post['link']
+        except:
+            link = ''
+        ws.cell(row=count_def, column=12).value = link
         ws.cell(row=count_def, column=13).value = ''
-        ws.cell(row=count_def, column=14).value = 'шт'
+        ws.cell(row=count_def, column=14).value = 'м2'
         ws.cell(row=count_def, column=15).value = ''
         ws.cell(row=count_def, column=16).value = ''
         ws.cell(row=count_def, column=17).value = 1
         ws.cell(row=count_def, column=18).value = 1
         ws.cell(row=count_def, column=19).value = ''
         ws.cell(row=count_def, column=20).value = 9999
-        ws.cell(row=count_def, column=21).value = post['garant']
-        ws.cell(row=count_def, column=22).value = post['documents']
-        ws.cell(row=count_def, column=23).value = post['video']
-        ws.cell(row=count_def, column=24).value = post['artikle']
-        ws.cell(row=count_def, column=25).value = post['text']
+        try:
+            opis = post['opisanie']
+        except:
+            opis = ''
+        ws.cell(row=count_def, column=21).value = opis
+        ws.cell(row=count_def, column=22).value = ''
+        ws.cell(row=count_def, column=23).value = ''
+        ws.cell(row=count_def, column=24).value = ''
+        ws.cell(row=count_def, column=25).value = ''
+        ws.cell(row=count_def, column=26).value = post['coutry']
+        ws.cell(row=count_def, column=27).value = ''
+        ws.cell(row=count_def, column=28).value = post['name']
+        try:
+            color = ';'.join(x for x in post['color'])
+        except:
+            color = ''
+        ws.cell(row=count_def, column=29).value = color
+        try:
+            size = ';'.join(x for x in post['size'])
+        except:
+            size = ''
 
+        ws.cell(row=count_def, column=30).value = size
+        try:
+            type_ = ';'.join(x for x in post['type'])
+        except:
+            type_ = ''
+        ws.cell(row=count_def, column=31).value = type_
         # for count_com, comment in enumerate(post['xarakt']):
 
         count = 0
         start_count = 26
 
-        for key, value in post['xarakt'].items():
-            # for key, value in self.colums_checker.items():
-            ws.cell(row=count_def, column=self.colums_checker[key]).value = value
-            # ws.cell(row=count_def + count, column=start_count).value = comment['author_comment']
-
-            count += 1
-            start_count += 1
+        # for key, value in post['xarakt'].items():
+        #     # for key, value in self.colums_checker.items():
+        #     ws.cell(row=count_def, column=self.colums_checker[key]).value = value
+        #     # ws.cell(row=count_def + count, column=start_count).value = comment['author_comment']
+        #
+        #     count += 1
+        #     start_count += 1
 
         return True
 

@@ -4,33 +4,45 @@ from browser.createbrowser import CreatBrowser
 from save_result import SaveResult
 from src.plu_parse import PluParser
 from src.source_parse import SourceParse
+from src._no_source_parse_plu import SourceParsePlu
 
 from src.temp import *
 
+from sql.bot_connector import BotDB
+
+from src.temp_collect import temp_collect
+
 
 def main():
-    # Ограничитель на кол-во страниц. Если поставить 0 то без ограничений
-    count_page = 1
+    url_ = ['https://profiplitka.ru/plitka/altacera/']
+
+    collec_count_page = 0
 
     browser_core = CreatBrowser()
 
-    print(f'Парсер запущен. Получаю данные')
+    for url in temp_collect:
+    # for url in url_:
 
-    # data_good = SourceParse(browser_core.driver, count_page).start_pars()
-    data_good = data_list
 
-    # data_good = data_good[:18]
+        print(f'Парсер запущен. Получаю данные')
 
-    print(f'Собрал {len(data_good)} plu')
+        # data_good = SourceParse(browser_core.driver, collec_count_page).start_pars(url)
 
-    ower_good_data = PluParser(browser_core.driver, data_good).start_pars()
+        #
+        #
+        # print(f'Собрал {len(data_good)} коллекций на обработку')
+        #
+        # collection_data = PluParser(browser_core.driver, data_good, BotDB).start_pars()
+        collection_data = coll_data
 
-    # ower_good_data = ower_list
-    # print()
+        print(f'Обработоал {len(collection_data)} коллекций')
 
-    file_name = f'{datetime.now().strftime("%H_%M_%S")}'
+        file_name = f'{datetime.now().strftime("%H_%M_%S")}'
 
-    SaveResult(ower_good_data).save_file(file_name)
+        SaveResult(collection_data).save_file(file_name)
+
+
+        print()
 
 
 if __name__ == '__main__':

@@ -7,12 +7,15 @@ from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 
 
-class SourceParse:
-    def __init__(self, driver, count_page):
+class SourceParsePlu:
+    def __init__(self, driver, count_page, collect, BotDB):
         self.driver = driver
         self.source_name = 'profiplitka'
         self.links_post = []
         self.count_page = count_page
+        self.collect = collect
+        self.url = f'https://profiplitka.ru/plitka/{collect}/elements/'
+        self.BotDB = BotDB
 
     def load_page(self, url):
         try:
@@ -25,7 +28,7 @@ class SourceParse:
     def __check_load_page(self):
         try:
             WebDriverWait(self.driver, 5).until(
-                EC.presence_of_element_located((By.XPATH, "//*[@id='collections']")))
+                EC.presence_of_element_located((By.XPATH, "//*[contains(@class, 'favorites__row')]")))
             return True
         except:
             return False
@@ -60,8 +63,8 @@ class SourceParse:
     def get_all_post(self):
         try:
             rows_post = self.driver.find_elements(by=By.XPATH,
-                                                  value=f"//*[@class='favorites__grid']"
-                                                        f"//*[contains(@class, 'compilation__item')]")
+                                                  value=f"//*[@id='products']"
+                                                        f"//*[contains(@class, 'favorites__row')]/div")
 
 
         except Exception as es:
@@ -94,7 +97,7 @@ class SourceParse:
 
     def get_link(self, row):
         try:
-            link_post = row.find_element(by=By.XPATH, value=f".//a[contains(@class, 'compilation__pic')]") \
+            link_post = row.find_element(by=By.XPATH, value=f".//a[contains(@class, 'link')]") \
                 .get_attribute('href')
         except:
             link_post = ''
@@ -103,107 +106,59 @@ class SourceParse:
 
     def get_name(self, row):
         try:
-            name_post = row.find_element(by=By.XPATH, value=f".//a[contains(@class, 'name')]").text
+            name_post = row.find_element(by=By.XPATH, value=f".//a[contains(@class, 'link')]").text
         except:
             name_post = ''
 
         return name_post
 
-    def get_color(self, row):
-        try:
-            name_post = row.find_elements(by=By.XPATH, value=f".//a[contains(@class, 'name')]//parent::div//img")
-        except:
-            return ''
-
-        color_list = [x.get_attribute('title') for x in name_post]
-
-        return color_list
 
     def get_coutry(self, row):
         try:
-            coutry = row.find_element(by=By.XPATH, value=f".//span[contains(text(), 'Страна')]//parent::div").text
+            har_ = row.find_element(by=By.XPATH, value=f".//p[contains(@class, 'info')]").text
         except:
-            return ''
+            return '', ''
 
         try:
-            coutry = coutry.replace('Страна: ', '')
+            coutry = har_.split()[-1]
         except:
-            coutry = coutry
-
-        return coutry
-
-    def get_size(self, row):
+            coutry = ''
         try:
-            size = row.find_element(by=By.XPATH, value=f".//span[contains(text(), 'Размер')]//parent::div").text
+            artikl = har_.split()[1]
         except:
-            return ''
+            artikl = ''
 
-        try:
-            size = size.replace('Размер: ', '')
-            size = size.replace(' см', '').strip()
-        except:
-            size = size
 
-        try:
-            size = size.split()
-        except:
-            size = size
 
-        return size
 
-    def get_type(self, row):
-        try:
-            type = row.find_element(by=By.XPATH, value=f".//span[contains(text(), 'Тип')]//parent::div").text
-        except:
-            return ''
-
-        try:
-            type = type.replace('Тип: ', '')
-        except:
-            type = type
-
-        try:
-            type = type.split(', ')
-        except:
-            type = type
-
-        return type
-
-    def get_price(self, row):
-        try:
-            price = row.find_element(by=By.XPATH, value=f".//span[contains(@class, 'price_real')]").text
-        except:
-            return ''
-
-        try:
-            price = price.replace(' руб./м2', '')
-        except:
-            price = price
-
-        return price
+        return coutry, artikl
 
 
 
     def itter_rows_post(self, rows_post):
 
         for row in rows_post:
+            status = True
+
             link = self.get_link(row)
             name = self.get_name(row)
-            color = self.get_color(row)
-            coutry = self.get_coutry(row)
-            size = self.get_size(row)
-            type_ = self.get_type(row)
-            price = self.get_price(row)
+            coutry, artikl = self.get_coutry(row)
 
             good_itter = {}
 
             good_itter['link'] = link
             good_itter['name'] = name
-            good_itter['color'] = color
             good_itter['coutry'] = coutry
-            good_itter['size'] = size
-            good_itter['type'] = type_
-            good_itter['price'] = price
+            good_itter['artikl'] = artikl
+            good_itter['collection'] = self.collect
+
+            chech_double = self.BotDB.exist_plu(artikl, self.collect)
+            if chech_double != []:
+                status = False
+                print(f'Найден дубль')
+
+            if status:
+                self.BotDB.add_plu(link, name, artikl, self.collect)
 
             self.links_post.append(good_itter)
 
@@ -227,19 +182,17 @@ class SourceParse:
             if _count_page >= self.count_page and self.count_page != 0:
                 print(f'Сработал ограничитель в {self.count_page} страниц')
                 return True
-            print(f'Обработал {_count_page} страниц(у)')
+
+            print(f'Обработал {_count_page} PLU')
 
             click_paginator = self.click_paginator()
 
             if not click_paginator:
                 return True
 
-            # time.sleep(0.5)
 
-            # return True
+    def start_pars_plu(self):
 
-    def start_pars(self, url):
-        self.url = url
         result_start_page = self.loop_load_page()
 
         if not result_start_page:

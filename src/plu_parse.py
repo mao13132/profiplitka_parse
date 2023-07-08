@@ -7,13 +7,16 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from save_result import SaveResult
 
+from src.get_plu_in_coll import GetPluInColl
+
 
 class PluParser:
-    def __init__(self, driver, links_post):
+    def __init__(self, driver, links_post, BotDB):
         self.driver = driver
         self.links_post = links_post
         self.post_data = {}
         self.all_xarakt = []
+        self.BotDB = BotDB
 
     def load_page(self, url):
         try:
@@ -233,8 +236,8 @@ class PluParser:
             return []
 
         # good_dict = self.itter_xarakter(all_list)
-        good_dict = [x.text for x in all_list
-                     ]
+        good_dict = [x.text for x in all_list]
+
         return good_dict
 
     def get_text(self):
@@ -362,6 +365,8 @@ class PluParser:
             if post['link'] == '':
                 continue
 
+            print(f'Начинаю обработку {post["name"]} коллекции')
+
             result_load_page = self.loop_load_page(post)
 
             if not result_load_page:
@@ -369,53 +374,31 @@ class PluParser:
 
             post['xarakt'] = self.get_xarakt_list()
 
-            # name, artikle = self.formated_name_article_category(post['name'])
-
-            # post['name'] = name
-            # post['artikle'] = artikle
-            # post['category'] = category
-
             post['proizvoditel'] = self.get_proizvoditel()
             post['opisanie'] = self.get_opisanie()
 
-            # post['text'] = self.get_text()
 
             image_list = self.get_photo()
 
             post['image'] = image_list
 
-            post['sostav'] = self.get_sostav()
 
-            # _document = self.get_documents()
-            #
-            # try:
-            #     _document = ';'.join(f"{x['name']} {x['link']}" for x in _document)
-            # except:
-            #     _document = ''
-            #
-            # post['documents'] = _document
-            #
-            # post['garant'] = self.get_garant()
+            ################сбор товара из коллекции############
+            post['plu_data'] = GetPluInColl(self.driver, post['name'], self.BotDB).start_plu_parse()
+
+            print(f'Собрал в коллекции {post["name"]} {len(post["plu_data"])}шт товаров')
+
+
 
             if count % 5 == 0 and count != 0:
-                print(f'Обработал {count} PLU')
-
-            if count % 32 == 0 and count != 0:
-                file_name = f'{count} - {datetime.now().strftime("%H_%M_%S")}'
-
-                save_dict = {}
-                save_dict['name_colums'] = self.all_xarakt
-                save_dict['result'] = self.links_post[:good_over_count]
-
-                SaveResult(save_dict).save_file(file_name)
-                print(f'Сохранил {count} PLU')
+                print(f'Обработал {count} колллекций')
 
             good_over_count += 1
 
-        print(f'Итог: собрал информацию с {len(self.links_post)} PLU')
+        print(f'Итог: собрал информацию с {len(self.links_post)} коллекций')
 
-        result_dict = {}
-        result_dict['name_colums'] = self.all_xarakt
-        result_dict['result'] = self.links_post
+        # result_dict = {}
+        # result_dict['name_colums'] = self.all_xarakt
+        # result_dict['result'] = self.links_post
 
-        return result_dict
+        return self.links_post
