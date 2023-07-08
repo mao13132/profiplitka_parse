@@ -97,6 +97,42 @@ class BotDB:
 
 
 
+    def get_all_count(self):
+        try:
+            result = self.cursor.execute("SELECT count(*) FROM plu")
+            response = result.fetchall()
+        except Exception as es:
+            print(f'SQL ошибка! Не смог добавить get_all_count в DB "{es}"')
+
+            return 0
+
+        try:
+            res = int(response[0][0])
+        except:
+            res = 0
+
+        return res
+
+
+    def get_tovar(self, id_pk):
+        try:
+            result = self.cursor.execute(f"SELECT * FROM plu WHERE id_pk = '{id_pk}'")
+            response = result.fetchall()
+        except Exception as es:
+            print(f'SQL ошибка! Не смог добавить get_tovar в DB "{es}"')
+
+            return False
+
+        try:
+            res = response[0]
+        except:
+            return []
+
+        return res
+
+
+
+
     def close(self):
         # Закрытие соединения
         self.conn.close()

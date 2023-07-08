@@ -7,15 +7,14 @@ from openpyxl.styles import Font
 from datetime import datetime
 
 
-class SaveResult:
+class SaveResultTovar:
     def __init__(self, good_dict):
 
         self.colums_checker = {}
 
-        self.good_dict = good_dict
+        self.good_dict = good_dict['result']
 
-
-        self.colums_harakt = []
+        self.colums_harakt = good_dict['name_colums']
 
         self.colums = ['ID продукта', 'Код', 'Имя продукта', 'Цена', 'Старая цена', 'Комплект главные',
                        'Комплект дополнительные', 'Фото', 'Категория', 'Производитель', 'Тип товара',
@@ -23,6 +22,8 @@ class SaveResult:
                        'Видимость варианта', 'Статус товара', 'Количество', 'Описание', 'Видео', 'Документы',
                        'Гарантия', 'Артикул', 'Страна Бренда', 'Производитель', 'Коллекция', 'Цвет', 'Размер', 'Тип',
                        'Состав коллекции']
+
+        # print()
 
     @staticmethod
     def save_to_json(filename, good_data):
@@ -85,7 +86,7 @@ class SaveResult:
         ws.cell(row=count_def, column=7).value = ''
 
         try:
-            image = ' '.join(x for x in post['image'])
+            image = post['image']
         except:
             image = ''
 
@@ -95,7 +96,6 @@ class SaveResult:
             category = 'Плитка, керамогранит, мозаика'
         except:
             category = ''
-
 
         ws.cell(row=count_def, column=9).value = category
         try:
@@ -110,7 +110,11 @@ class SaveResult:
             link = ''
         ws.cell(row=count_def, column=12).value = link
         ws.cell(row=count_def, column=13).value = ''
-        ws.cell(row=count_def, column=14).value = 'м2'
+        try:
+            ed = post['edinicha']
+        except:
+            ed = ''
+        ws.cell(row=count_def, column=14).value = ed
         ws.cell(row=count_def, column=15).value = ''
         ws.cell(row=count_def, column=16).value = ''
         ws.cell(row=count_def, column=17).value = 1
@@ -118,46 +122,57 @@ class SaveResult:
         ws.cell(row=count_def, column=19).value = ''
         ws.cell(row=count_def, column=20).value = 9999
         try:
-            opis = post['opisanie']
+            opis = post['text']
         except:
             opis = ''
         ws.cell(row=count_def, column=21).value = opis
         ws.cell(row=count_def, column=22).value = ''
         ws.cell(row=count_def, column=23).value = ''
         ws.cell(row=count_def, column=24).value = ''
-        ws.cell(row=count_def, column=25).value = ''
-        ws.cell(row=count_def, column=26).value = post['coutry']
-        ws.cell(row=count_def, column=27).value = ''
-        ws.cell(row=count_def, column=28).value = post['name']
         try:
-            color = ';'.join(x for x in post['color'])
+            artikl = post['artikle']
         except:
-            color = ''
-        ws.cell(row=count_def, column=29).value = color
+            artikl = ''
+        ws.cell(row=count_def, column=25).value = artikl
         try:
-            size = ';'.join(x for x in post['size'])
+            country = post['xarakt']['Страна']
+        except:
+            country = ''
+        ws.cell(row=count_def, column=26).value = country
+        ws.cell(row=count_def, column=27).value = ''
+        try:
+            coll_name = post['collection']
+        except:
+            coll_name = ''
+        ws.cell(row=count_def, column=28).value = coll_name
+        ws.cell(row=count_def, column=29).value = ''
+        try:
+            size = post['xarakt']['Размер']
         except:
             size = ''
 
         ws.cell(row=count_def, column=30).value = size
         try:
-            type_ = ';'.join(x for x in post['type'])
+            type_ = post['xarakt']['Тип']
         except:
             type_ = ''
         ws.cell(row=count_def, column=31).value = type_
-        ws.cell(row=count_def, column=32).value = 'Дизайн'
-        # for count_com, comment in enumerate(post['xarakt']):
+
+        ws.cell(row=count_def, column=32).value = type_
 
         count = 0
-        start_count = 26
+        start_count = 33
 
-        # for key, value in post['xarakt'].items():
-        #     # for key, value in self.colums_checker.items():
-        #     ws.cell(row=count_def, column=self.colums_checker[key]).value = value
-        #     # ws.cell(row=count_def + count, column=start_count).value = comment['author_comment']
-        #
-        #     count += 1
-        #     start_count += 1
+        for key, value in post['xarakt'].items():
+            # for key, value in self.colums_checker.items():
+            try:
+                ws.cell(row=count_def, column=self.colums_checker[key]).value = value
+            except:
+                continue
+            # ws.cell(row=count_def + count, column=start_count).value = comment['author_comment']
+
+            count += 1
+            start_count += 1
 
         return True
 
@@ -178,9 +193,9 @@ class SaveResult:
     def create_number_uncolums(self, ws):
 
         global_count = 0
-        start_count = 21
+        start_count = 33
 
-        for col in range(len(self.colums_harakt) + 11):
+        for col in range(len(self.colums_harakt) + 5):
             ws.cell(row=1, column=start_count + global_count).value = random.randint(1111, 9999)
 
             global_count += 1

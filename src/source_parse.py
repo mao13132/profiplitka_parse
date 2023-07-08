@@ -32,7 +32,7 @@ class SourceParse:
 
     def loop_load_page(self):
         count = 0
-        count_ower = 10
+        count_ower = 5
 
         while True:
 
@@ -141,6 +141,7 @@ class SourceParse:
         try:
             size = size.replace('Размер: ', '')
             size = size.replace(' см', '').strip()
+            size = size.replace(',', '')
         except:
             size = size
 
@@ -238,13 +239,19 @@ class SourceParse:
 
             # return True
 
-    def start_pars(self, url):
-        self.url = url
-        result_start_page = self.loop_load_page()
+    def start_pars(self):
+        from src.temp_collect import temp_collect
 
-        if not result_start_page:
-            return False
+        for url in temp_collect:
 
-        response_one_step = self.step_one_parse()
+            self.url = url
+            result_start_page = self.loop_load_page()
+
+            if not result_start_page:
+                continue
+
+            response_one_step = self.step_one_parse()
+
+
 
         return self.links_post

@@ -392,6 +392,7 @@ class PluParser:
 
             if count % 5 == 0 and count != 0:
                 print(f'Обработал {count} колллекций')
+                return self.links_post
 
             good_over_count += 1
 
