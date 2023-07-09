@@ -303,6 +303,54 @@ class TovarParser:
         return good_image_list
 
 
+    def _one_pars(self, sql_tovar):
+        try:
+            id_pk, url, name, _, artikle, collection, prozvoditel, _ = sql_tovar
+        except:
+            return False
+
+        if not sql_tovar:
+            return False
+
+        post = {}
+        post['name'] = name
+        post['id_pk'] = id_pk
+        post['link'] = url
+        post['artikle'] = artikle
+        post['collection'] = collection
+        post['prozvoditel'] = prozvoditel
+
+        result_load_page = self.loop_load_page(post)
+
+        if not result_load_page:
+            return False
+
+        post['xarakt'] = self.get_xarakt_list()
+
+
+
+        post['text'] = self.get_text()
+
+        self.get_xarakt_list2(post['xarakt'])
+
+        post['price'] = self.get_price()
+
+        post['edinicha'] = self.get_edinicha()
+
+        image_list = self.get_photo()
+
+        try:
+            image_list = ' '.join(x for x in image_list)
+        except:
+            image_list = ''
+
+        post['image'] = image_list
+
+        self.links_post.append(post)
+
+        return True
+
+
 
     def start_pars(self):
 
@@ -312,54 +360,17 @@ class TovarParser:
 
         count_db_tovar = self.BotDB.get_all_count()
 
-        for id_pk_ in range(66):
+        for id_pk_ in range(5):
         # for id_pk_ in range(count_db_tovar):
 
             sql_tovar = self.BotDB.get_tovar(id_pk_ + 1)
-            try:
-                id_pk, url, name, _, artikle, collection, prozvoditel, _ = sql_tovar
-            except:
-                continue
 
-            if not sql_tovar:
-                continue
-
-            post = {}
-            post['name'] = name
-            post['id_pk'] = id_pk
-            post['link'] = url
-            post['artikle'] = artikle
-            post['collection'] = collection
-            post['prozvoditel'] = prozvoditel
-
-            result_load_page = self.loop_load_page(post)
-
-            if not result_load_page:
-                continue
-
-            post['xarakt'] = self.get_xarakt_list()
+            respons_job = self._one_pars(sql_tovar)
 
             if id_pk_ % 5 == 0 and id_pk_ != 0:
                 print(f'Обработал {id_pk_} товаров')
 
-            post['text'] = self.get_text()
 
-            self.get_xarakt_list2(post['xarakt'])
-
-            post['price'] = self.get_price()
-
-            post['edinicha'] = self.get_edinicha()
-
-            image_list = self.get_photo()
-
-            try:
-                image_list = ' '.join(x for x in image_list)
-            except:
-                image_list = ''
-
-            post['image'] = image_list
-
-            self.links_post.append(post)
 
             # print()
 
