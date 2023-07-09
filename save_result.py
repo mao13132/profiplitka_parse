@@ -207,7 +207,7 @@ class SaveResult:
 
         filename = f'{filename}'
 
-        wb.save(f'{filename}.xlsx')
+        wb.save(f'collections_{filename}.xlsx')
 
         # self.save_to_json(filename, self.good_dict)
 

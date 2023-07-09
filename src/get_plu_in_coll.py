@@ -51,10 +51,15 @@ class GetPluInColl:
             coutry = har_.split()[-1]
         except:
             coutry = ''
+            print(f'Нулевой страна coutry')
+        _artikl = har_.split('\n')
+
+
         try:
-            artikl = har_.split()[1]
+            artikl = _artikl[0].split(':')[1].strip()
         except:
             artikl = ''
+            print(f'Нулевой артикул get_plu_in_coll')
 
 
 
@@ -113,7 +118,7 @@ class GetPluInColl:
 
             if status:
                 self.BotDB.add_plu(link, name, artikl, self.collect, proiz)
-
+                print(f'Добавил в базу данных "{name}"')
 
             if count % 5 == 0 and count != 0:
                 print(f'Обработал {count} товаров в коллекции')

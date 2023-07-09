@@ -1,4 +1,5 @@
-temp_collect = ['https://profiplitka.ru/plitka/abk-group/', 'https://profiplitka.ru/plitka/absolut-gres/',
+temp_collect = ['https://profiplitka.ru/plitka/absolut-gres/']
+temp_collect2 = ['https://profiplitka.ru/plitka/abk-group/', 'https://profiplitka.ru/plitka/absolut-gres/',
                 'https://profiplitka.ru/plitka/absolut-keramika/',
                 'https://profiplitka.ru/plitka/alma-ceramica/', 'https://profiplitka.ru/plitka/altacera/',
                 'https://profiplitka.ru/plitka/ametis-by-estima/', 'https://profiplitka.ru/plitka/anka-seramik/',

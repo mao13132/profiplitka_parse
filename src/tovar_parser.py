@@ -312,7 +312,7 @@ class TovarParser:
 
         count_db_tovar = self.BotDB.get_all_count()
 
-        for id_pk_ in range(10):
+        for id_pk_ in range(66):
         # for id_pk_ in range(count_db_tovar):
 
             sql_tovar = self.BotDB.get_tovar(id_pk_ + 1)

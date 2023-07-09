@@ -99,7 +99,7 @@ class SaveResultTovar:
 
         ws.cell(row=count_def, column=9).value = category
         try:
-            proiz = post['proizvoditel']
+            proiz = post['prozvoditel']
         except:
             proiz = ''
         ws.cell(row=count_def, column=10).value = proiz
@@ -222,7 +222,7 @@ class SaveResultTovar:
 
         filename = f'{filename}'
 
-        wb.save(f'{filename}.xlsx')
+        wb.save(f'product_{filename}.xlsx')
 
         # self.save_to_json(filename, self.good_dict)
 
